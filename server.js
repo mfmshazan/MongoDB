@@ -61,6 +61,33 @@ app.post("/api/quotes",  async(req,res) => {
   }
 })
 
+//Put(update) a quote 
+app.put("/api/quotes/:id", async (req, res) => {
+  
+  console.log(req.params);
+
+  const { text } = req.body;
+  const { id } = req.params;
+
+  if(!mongoose.Types.ObjectId.isValid(id)){
+    return res.status(400).json({error: "There is no valid ID"})
+  }
+  
+  if(!text || !text.trim()){
+    return res.status(400).json({error: "There is no text"})
+  }
+
+  const updated = await Quote.findByIdAndUpdate(id,
+    {text: text.trim()},
+    {new: true}
+  );       
+
+  if(!updated){
+    return res.status(404).json({error: "Quote not found"})
+  }
+  res.json(updated);
+})
+
 
 // Connect to mongoDB
 mongoose.connect(process.env.MONGO_URI)
