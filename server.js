@@ -42,50 +42,71 @@ app.get("/api/quotes", async (_req, res) => {
 
 
 //Post a new quote
-app.post("/api/quotes",  async(req,res) => {
+app.post("/api/quotes", async (req, res) => {
 
-  try{
-    const {text} = req.body;
+  try {
+    const { text } = req.body;
 
-    if(!text || !text.trim()){
-      res.status(400).json({error:"There is no quote"});
+    if (!text || !text.trim()) {
+      res.status(400).json({ error: "There is no quote" });
     }
 
-    const created = await Quote.create({text:text.trim()})
+    const created = await Quote.create({ text: text.trim() })
 
     res.status(400).json(created)
   }
 
-  catch(err){
+  catch (err) {
     res.status(500).json("There is no quote to post")
   }
 })
 
 //Put(update) a quote 
 app.put("/api/quotes/:id", async (req, res) => {
-  
+
   console.log(req.params);
 
   const { text } = req.body;
   const { id } = req.params;
 
-  if(!mongoose.Types.ObjectId.isValid(id)){
-    return res.status(400).json({error: "There is no valid ID"})
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: "There is no valid ID" })
   }
-  
-  if(!text || !text.trim()){
-    return res.status(400).json({error: "There is no text"})
+
+  if (!text || !text.trim()) {
+    return res.status(400).json({ error: "There is no text" })
   }
 
   const updated = await Quote.findByIdAndUpdate(id,
-    {text: text.trim()},
-    {new: true}
-  );       
+    { text: text.trim() },
+    { new: true }
+  );
 
-  if(!updated){
-    return res.status(404).json({error: "Quote not found"})
+  if (!updated) {
+    return res.status(404).json({ error: "Quote not found" })
   }
   res.json(updated);
+})
+
+
+//Delete a quote
+
+app.delete("/api/quotes/:id", async (req, res) => {
+
+  console.log(req.params);
+
+  const { id } = req.params;
+
+  if(!mongoose.Types.ObjectId.isValid(id)){
+    res.status(400).json({error: "There is no valid ID"});
+  }
+
+  const deleted = await Quote.findByIdAndDelete(id);
+
+  if(!deleted){
+    return res.status(404).json({error: "Quote not found"});
+  }
+  res.json(deleted);
 })
 
 
