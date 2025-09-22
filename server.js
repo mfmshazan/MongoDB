@@ -23,7 +23,6 @@ const quoteSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
 const Quote = mongoose.model("Quote", quoteSchema);
 
 // Test API
@@ -40,6 +39,28 @@ app.get("/api/quotes", async (_req, res) => {
     res.status(500).json({ error: "Failed to fetch" });
   }
 });
+
+
+//Post a new quote
+app.post("/api/quotes",  async(req,res) => {
+
+  try{
+    const {text} = req.body;
+
+    if(!text || !text.trim()){
+      res.status(400).json({error:"There is no quote"});
+    }
+
+    const created = await Quote.create({text:text.trim()})
+
+    res.status(400).json(created)
+  }
+
+  catch(err){
+    res.status(500).json("There is no quote to post")
+  }
+})
+
 
 // Connect to mongoDB
 mongoose.connect(process.env.MONGO_URI)
